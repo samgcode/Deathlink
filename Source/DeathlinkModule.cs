@@ -154,13 +154,6 @@ public class DeathlinkModule : EverestModule
         Instance.Start(int.Parse(arg));
     }
 
-    // [Command("dl_pause", "Spawn a Co-op Helper Session Picker")]
-    // public static void pause(string arg)
-    // {
-    //     Level level = Engine.Scene as Level;
-    //     level.Pause(2, false, false);
-    // }
-
     [Command("dl_ss", "Spawn a Co-op Helper Session Picker")]
     public static void SpawnSessionPicker_temp(string arg)
     {
