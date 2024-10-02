@@ -1,0 +1,10 @@
+- Name: Deathlink
+  Version: 0.1.0
+  DLL: bin/Deathlink.dll
+  Dependencies:
+    - Name: EverestCore
+      Version: 1.4673.0
+    - Name: CoopHelper
+      Version: 1.0.6
+    - Name: CelesteNet.Client
+      Version: 2.2.1
