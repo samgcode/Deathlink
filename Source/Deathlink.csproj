@@ -27,6 +27,14 @@
             <HintPath>.\Ref\CoopHelper.dll</HintPath>
             <Private>False</Private>
         </Reference>
+        <Reference Include="CelesteNet.Client">
+            <HintPath>.\Ref\CelesteNet.Client.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
+        <Reference Include="CelesteNet.Shared">
+            <HintPath>.\Ref\CelesteNet.Shared.dll</HintPath>
+            <Private>False</Private>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
