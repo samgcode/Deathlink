@@ -2,15 +2,9 @@
 using System.Reflection;
 using Monocle;
 using Microsoft.Xna.Framework;
-using Celeste.Mod.CoopHelper;
-using Celeste.Mod.CoopHelper.Entities;
-using Celeste.Mod.CoopHelper.Entities.Helper;
-using Celeste.Mod.CoopHelper.Infrastructure;
-using Celeste.Mod.CoopHelper.Module;
-using System.Collections.Generic;
-using Celeste.Mod.CoopHelper.IO;
-using Celeste.Mod.CoopHelper.Data;
 using MonoMod.RuntimeDetour;
+using Celeste.Mod.Deathlink.IO;
+using Celeste.Mod.Deathlink.Data;
 
 namespace Celeste.Mod.Deathlink;
 
@@ -26,8 +20,9 @@ public class DeathlinkModule : EverestModule
     public static DeathlinkModuleSession Session => (DeathlinkModuleSession)Instance._Session;
 
     private static Hook hook_Player_orig_Die;
-    public bool propagate = true;
-    private static int lastDeath = -1;
+    private CNetComm Comm;
+
+    private bool propagate = true;
 
     public DeathlinkModule()
     {
@@ -37,28 +32,27 @@ public class DeathlinkModule : EverestModule
 
     public override void Load()
     {
+        Celeste.Instance.Components.Add(Comm = new CNetComm(Celeste.Instance));
 
         Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
         Logger.Log(LogLevel.Info, "Deathlink", "Deathlink loaded!");
 
+        CNetComm.OnReceiveDeathlinkUpdate += OnReceiveDeathlinkUpdateHandler;
+
         hook_Player_orig_Die = new Hook(
                 typeof(Player).GetMethod("orig_Die", BindingFlags.Public | BindingFlags.Instance),
                 typeof(DeathlinkModule).GetMethod("OnPlayerDie"));
-
-        CNetComm.OnReceivePlayerState += OnPlayerStatusUpdate;
     }
 
     public override void Unload()
     {
-        RemoveHooks();
-    }
+        Celeste.Instance.Components.Remove(Comm);
+        Comm = null;
 
-    private void RemoveHooks()
-    {
+        CNetComm.OnReceiveDeathlinkUpdate -= OnReceiveDeathlinkUpdateHandler;
+
         hook_Player_orig_Die?.Dispose();
         hook_Player_orig_Die = null;
-
-        CNetComm.OnReceivePlayerState -= OnPlayerStatusUpdate;
     }
 
 
@@ -68,51 +62,23 @@ public class DeathlinkModule : EverestModule
         {
             if (Instance.propagate)
             {
-                lastDeath++;
-                string payload = $"DEATH:{lastDeath}:{PlayerState.Mine.Pid.CNetID}:{PlayerState.Mine.Pid.Name}0";
-                Logger.Log(LogLevel.Info, "Deathlink", $"Sending player data: {payload}");
-
-                PlayerState.Mine.ActivePicker = new EntityID(payload, 0);
-                PlayerState.Mine.SendUpdateImmediate();
+                CNetComm.Instance.Send(new DeathlinkUpdate(), false);
 
             }
             Instance.propagate = true;
         }
-
         // Now actually do the thing
         return orig(self, direction, ifInvincible, registerStats);
     }
 
-    public static int GetPlayerID()
+    public void OnReceiveDeathlinkUpdateHandler(DeathlinkUpdate data)
     {
-        int myPlayerID = int.Parse(PlayerState.Mine.Pid.CNetID.ToString());
-        Logger.Log(LogLevel.Info, "Deathlink", $"My player ID: {myPlayerID}");
-        return myPlayerID;
-    }
-
-    private void OnPlayerStatusUpdate(DataPlayerState data)
-    {
+        Logger.Log(LogLevel.Info, "Deathlink", $"Received deathlink update: {data}");
         if (Settings.ReceiveDeaths)
         {
-            if (data.newState.ActivePicker == null)
+            if (data.team == Settings.Team)
             {
-                Logger.Log(LogLevel.Info, "Deathlink", $"new state was null");
-                return;
-            }
-            string[] args = data.newState.ActivePicker.Value.ToString().Split(':');
-            if (args[0] != "DEATH") return;
-
-            Instance.propagate = false;
-
-            int count = int.Parse(args[1]);
-            int pid = int.Parse(args[2]);
-            Logger.Log(LogLevel.Info, "Deathlink", $"Received Death({count}) from player: {args[3]}({pid})");
-
-            if (count == lastDeath + 1)
-            {
-                Logger.Log(LogLevel.Info, "Deathlink", $"applying death");
-
-                lastDeath = count;
+                propagate = false;
 
                 Player player = Engine.Scene.Tracker.GetEntity<Player>();
                 if (player != null)
@@ -123,21 +89,7 @@ public class DeathlinkModule : EverestModule
                 {
                     Logger.Log(LogLevel.Error, "Deathlink", "Player not found");
                 }
-
             }
         }
-    }
-
-    [Command("dl_kill", "Kill other players")]
-    public static void TestCnetHooks(string arg)
-    {
-        lastDeath++;
-        string payload = $"DEATH:{lastDeath}:{PlayerState.Mine.Pid.CNetID}:{PlayerState.Mine.Pid.Name}0";
-        Logger.Log(LogLevel.Info, "Deathlink", $"Sending player data: {payload}");
-
-        PlayerState.Mine.ActivePicker = new EntityID(payload, 0);
-        PlayerState.Mine.SendUpdateImmediate();
-
-        Instance.propagate = true;
     }
 }
