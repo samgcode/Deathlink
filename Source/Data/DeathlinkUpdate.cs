@@ -17,7 +17,7 @@ namespace Celeste.Mod.Deathlink.Data
 
     public DeathlinkUpdate(int team = -1)
     {
-      team = team != -1 ? team : DeathlinkModule.Settings.Team;
+      this.team = team != -1 ? team : DeathlinkModule.Settings.Team;
       cnetChannel = CNetComm.Instance.CurrentChannel?.Name;
     }
 

@@ -1,8 +1,9 @@
 DEATHLINK_ENABLE= Enabled
-DEATHLINK_ENABLE_DESC = The two settings below only apply when this is enabled
-DEATHLINK_KILL_OTHERS = Kill Others
-DEATHLINK_KILL_OTHERS_DESC = Wether or not other players on your team will die when you do
-DEATHLINK_RECEIVE_DEATHS = Receive Deaths
-DEATHLINK_RECEIVE_DEATHS_DESC = Wether or not you will die when other players on your team do
-DEATHLINK_TEAM = Team
-DEATHLINK_TEAM_DESC = Deaths will only affect players on the same team
+DEATHLINK_ENABLE_DESC= The two settings below only apply when this is enabled
+DEATHLINK_KILL_OTHERS= Kill Others
+DEATHLINK_KILL_OTHERS_DESC= Wether or not other players on your team will die when you do
+DEATHLINK_RECEIVE_DEATHS= Receive Deaths
+DEATHLINK_RECEIVE_DEATHS_DESC= Wether or not you will die when other players on your team do
+DEATHLINK_TEAM= Team
+DEATHLINK_TEAM_DESC= Deaths will only affect players on the same team
+DEATHLINK_SHOWDEATHS= Show death counts

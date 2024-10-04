@@ -12,31 +12,27 @@ namespace Celeste.Mod.Deathlink.IO
     {
       if (!CNetComm.Instance.IsConnected) return;
 
-      if (int.TryParse(arg, out int team))
-      {
-        if (team < 0 || team > 100)
-        {
-          System.Console.WriteLine("Team number must be in the range [0..100], or none for current team");
-          return;
-        }
-        CNetComm.Instance.Send(new DeathlinkUpdate(team), true);
-      }
-      else
-      {
-        CNetComm.Instance.Send(new DeathlinkUpdate(), true);
-      }
-    }
+      int.TryParse(arg, out int team);
 
-    [Command("dl_debug_flag", "dl_debug_flag [true/(false)]: Set logger to debug or not")]
-    public static void DebugFlagCommand(string arg)
-    {
-      if (bool.TryParse(arg, out bool flag) && flag)
+      if (team < 0 || team > 100)
       {
-        Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Debug);
         return;
       }
+      Logger.Log(LogLevel.Info, "Deathlink", $"Killing team {team}");
+      CNetComm.Instance.Send(new DeathlinkUpdate(team), true);
 
-      Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
+    }
+
+    [Command("dl_deaths", "dl_deaths: Lists the death counts of all players")]
+    public static void ListDeathsCommand(string arg)
+    {
+      DeathlinkModule.ListDeaths();
+    }
+
+    [Command("dl_reset_deaths", "dl_reset_deaths: Resets the death counts of all players")]
+    public static void ResetDeathsCommand(string arg)
+    {
+      DeathlinkModule.ResetDeathCounts();
     }
   }
 }

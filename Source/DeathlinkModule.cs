@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using MonoMod.RuntimeDetour;
 using Celeste.Mod.Deathlink.IO;
 using Celeste.Mod.Deathlink.Data;
+using System.Collections.Generic;
 
 namespace Celeste.Mod.Deathlink;
 
@@ -23,6 +24,7 @@ public class DeathlinkModule : EverestModule
     private CNetComm Comm;
 
     private bool propagate = true;
+    private static Dictionary<string, int> deathCounts = new Dictionary<string, int>();
 
     public DeathlinkModule()
     {
@@ -62,7 +64,7 @@ public class DeathlinkModule : EverestModule
         {
             if (Instance.propagate && CNetComm.Instance.IsConnected)
             {
-                Instance.announceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
+                Instance.AnnounceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
                 CNetComm.Instance.Send(new DeathlinkUpdate(), false);
             }
             Instance.propagate = true;
@@ -76,7 +78,7 @@ public class DeathlinkModule : EverestModule
         Logger.Log(LogLevel.Debug, "Deathlink", $"Received deathlink update: {data}");
         if (Settings.Enabled && Settings.ReceiveDeaths)
         {
-            announceDeath(data.player.FullName, data.team);
+            AnnounceDeath(data.player.FullName, data.team);
             if (data.team == 0 || data.team == Settings.Team)
             {
                 propagate = false;
@@ -94,7 +96,7 @@ public class DeathlinkModule : EverestModule
         }
     }
 
-    public void announceDeath(string player, int team)
+    public void AnnounceDeath(string player, int team)
     {
         if (!CNetComm.Instance.IsConnected) return;
 
@@ -104,7 +106,34 @@ public class DeathlinkModule : EverestModule
         }
         else
         {
+            if (deathCounts.TryGetValue(player, out int count))
+            {
+                deathCounts[player] = count + 1;
+            }
+            else
+            {
+                deathCounts.Add(player, 1);
+            }
             CNetComm.Instance.CnetContext.Status.Set($"team {team} was killed by {player}!", 2.0f, false, false);
+        }
+    }
+
+    public static void ListDeaths()
+    {
+        if (!CNetComm.Instance.IsConnected) return;
+        string output = "deaths:\n";
+        foreach (var pair in deathCounts)
+        {
+            output += $"{pair.Key}: {pair.Value}\n";
+        }
+        CNetComm.Instance.CnetContext.Status.Set(output, 5.0f, false, false);
+    }
+
+    public static void ResetDeathCounts()
+    {
+        foreach (KeyValuePair<string, int> entry in deathCounts)
+        {
+            deathCounts[entry.Key] = 0;
         }
     }
 }
