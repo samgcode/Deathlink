@@ -73,11 +73,6 @@ namespace Celeste.Mod.Deathlink.IO
 
     private ConcurrentQueue<Action> updateQueue = new ConcurrentQueue<Action>();
 
-    public static ulong SentMsgs { get; private set; } = 0;
-    public static ulong ReceivedMsgs { get; private set; } = 0;
-
-    private static object ReceivedMessagesCounterLock = new object();
-
     #endregion
 
     #region Setup
@@ -149,7 +144,6 @@ namespace Celeste.Mod.Deathlink.IO
       {
         if (sendToSelf) CnetClient.SendAndHandle(data);
         else CnetClient.Send(data);
-        // if (!(data is Data.DataPlayerState)) ++SentMsgs;
       }
       catch (Exception e)
       {

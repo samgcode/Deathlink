@@ -62,8 +62,11 @@ public class DeathlinkModule : EverestModule
         {
             if (Instance.propagate)
             {
-                CNetComm.Instance.Send(new DeathlinkUpdate(), false);
-
+                if (CNetComm.Instance.IsConnected)
+                {
+                    Instance.announceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
+                    CNetComm.Instance.Send(new DeathlinkUpdate(), false);
+                }
             }
             Instance.propagate = true;
         }
@@ -76,6 +79,7 @@ public class DeathlinkModule : EverestModule
         Logger.Log(LogLevel.Info, "Deathlink", $"Received deathlink update: {data}");
         if (Settings.ReceiveDeaths)
         {
+            announceDeath(data.player.FullName, data.team);
             if (data.team == Settings.Team)
             {
                 propagate = false;
@@ -90,6 +94,14 @@ public class DeathlinkModule : EverestModule
                     Logger.Log(LogLevel.Error, "Deathlink", "Player not found");
                 }
             }
+        }
+    }
+
+    public void announceDeath(string player, int team)
+    {
+        if (CNetComm.Instance.IsConnected)
+        {
+            CNetComm.Instance.CnetContext.Status.Set($"team {team} was killed by {player}!", 2.0f, false, false);
         }
     }
 }
