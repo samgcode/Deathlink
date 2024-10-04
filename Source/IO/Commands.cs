@@ -7,23 +7,36 @@ namespace Celeste.Mod.Deathlink.IO
 {
   public class Commands
   {
-    [Command("dl_send", "Send a message to the Deathlink server")]
-    public static void TestCnetHooks(string arg)
+    [Command("dl_kill", "dl_kill [0..100]: Kill team, leave empty to kill own team")]
+    public static void KillTeamCommand(string arg)
     {
-      bool.TryParse(arg, out bool sendToSelf);
-      CNetComm.Instance.Send(new DeathlinkUpdate(), sendToSelf);
+      if (!CNetComm.Instance.IsConnected) return;
+
+      if (int.TryParse(arg, out int team))
+      {
+        if (team < 0 || team > 100)
+        {
+          System.Console.WriteLine("Team number must be in the range [0..100], or none for current team");
+          return;
+        }
+        CNetComm.Instance.Send(new DeathlinkUpdate(team), true);
+      }
+      else
+      {
+        CNetComm.Instance.Send(new DeathlinkUpdate(), true);
+      }
     }
 
-    [Command("dl_text_test", "Send a message to the Deathlink server")]
-    public static void TestCNetText(string arg)
+    [Command("dl_debug_flag", "dl_debug_flag [true/(false)]: Set logger to debug or not")]
+    public static void DebugFlagCommand(string arg)
     {
-      string[] args = arg.Split(':');
-      float.TryParse(args[1], out float time);
-
-      if (CNetComm.Instance.IsConnected)
+      if (bool.TryParse(arg, out bool flag) && flag)
       {
-        CNetComm.Instance.CnetContext.Status.Set(args[0], time, false, false);
+        Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Debug);
+        return;
       }
+
+      Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
     }
   }
 }

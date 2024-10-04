@@ -128,12 +128,6 @@ namespace Celeste.Mod.Deathlink.IO
 
     #region Entry Points
 
-    /// <summary>
-    /// Send a packet immediately
-    /// </summary>
-    /// <typeparam name="T">DataType</typeparam>
-    /// <param name="data">Packet object</param>
-    /// <param name="sendToSelf">If true, handlers on this client will also fire for this message</param>
     internal void Send<T>(T data, bool sendToSelf) where T : DataType<T>
     {
       if (!CanSendMessages)
@@ -147,32 +141,21 @@ namespace Celeste.Mod.Deathlink.IO
       }
       catch (Exception e)
       {
-        // The only way I know of for this to happen is a well-timed connection blorp but just in case
-        Logger.Log(LogLevel.Error, "Deathlink/CNetComm", $"Exception was handled in CoopHelper.IO.CNetComm.Send<{typeof(T).Name}>");
+        // "The only way I know of for this to happen is a well-timed connection blorp but just in case" -corkr900
+        Logger.Log(LogLevel.Error, "Deathlink/CNetComm", $"Exception was handled in Deathlink.IO.CNetComm.Send<{typeof(T).Name}>");
         Logger.LogDetailed(LogLevel.Error, "Deathlink/CNetComm", e.Message);
       }
     }
 
-    /// <summary>
-    /// This function is called once per CelesteNet tick.
-    /// This is the primary kicking-off point for network-y stuff
-    /// </summary>
-    /// <param name="counter">This parameter counts up once for each tick that occurs since starting the game</param>
     internal void Tick(ulong counter)
     {
-      // Some things don't need to happen very often, so only do them every X ticks
-      // if (counter % 30 == 0)
-      // {
-      //   PlayerState.PurgeStale();
-      //   PlayerState.Mine.CheckSendHeartbeat();
-      // }
+
     }
 
     #endregion
 
     public bool isSameChannel(string channel)
     {
-
       return CurrentChannel?.Name == channel;
     }
 
@@ -186,7 +169,6 @@ namespace Celeste.Mod.Deathlink.IO
 
     public void Handle(CelesteNetConnection con, DeathlinkUpdate data)
     {
-
       if (data.player == null) data.player = CnetClient.PlayerInfo;  // It's null when handling our own messages
       if (!isSameChannel(data.cnetChannel)) return;
       updateQueue.Enqueue(() => OnReceiveDeathlinkUpdate?.Invoke(data));

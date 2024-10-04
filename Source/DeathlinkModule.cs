@@ -58,15 +58,12 @@ public class DeathlinkModule : EverestModule
 
     public static PlayerDeadBody OnPlayerDie(Func<Player, Vector2, bool, bool, PlayerDeadBody> orig, Player self, Vector2 direction, bool ifInvincible, bool registerStats)
     {
-        if (Settings.KillOthers)
+        if (Settings.Enabled && Settings.KillOthers)
         {
-            if (Instance.propagate)
+            if (Instance.propagate && CNetComm.Instance.IsConnected)
             {
-                if (CNetComm.Instance.IsConnected)
-                {
-                    Instance.announceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
-                    CNetComm.Instance.Send(new DeathlinkUpdate(), false);
-                }
+                Instance.announceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
+                CNetComm.Instance.Send(new DeathlinkUpdate(), false);
             }
             Instance.propagate = true;
         }
@@ -76,11 +73,11 @@ public class DeathlinkModule : EverestModule
 
     public void OnReceiveDeathlinkUpdateHandler(DeathlinkUpdate data)
     {
-        Logger.Log(LogLevel.Info, "Deathlink", $"Received deathlink update: {data}");
-        if (Settings.ReceiveDeaths)
+        Logger.Log(LogLevel.Debug, "Deathlink", $"Received deathlink update: {data}");
+        if (Settings.Enabled && Settings.ReceiveDeaths)
         {
             announceDeath(data.player.FullName, data.team);
-            if (data.team == Settings.Team)
+            if (data.team == 0 || data.team == Settings.Team)
             {
                 propagate = false;
 
@@ -91,7 +88,7 @@ public class DeathlinkModule : EverestModule
                 }
                 else
                 {
-                    Logger.Log(LogLevel.Error, "Deathlink", "Player not found");
+                    Logger.Log(LogLevel.Debug, "Deathlink", "Player not found");
                 }
             }
         }
@@ -99,7 +96,13 @@ public class DeathlinkModule : EverestModule
 
     public void announceDeath(string player, int team)
     {
-        if (CNetComm.Instance.IsConnected)
+        if (!CNetComm.Instance.IsConnected) return;
+
+        if (team == 0)
+        {
+            CNetComm.Instance.CnetContext.Status.Set($"{player}: killed everyone", 2.0f, false, false);
+        }
+        else
         {
             CNetComm.Instance.CnetContext.Status.Set($"team {team} was killed by {player}!", 2.0f, false, false);
         }
