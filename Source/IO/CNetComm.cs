@@ -121,6 +121,9 @@ namespace Celeste.Mod.Deathlink.IO
       {
         act();
       }
+
+      DeathlinkModule.Instance.Update();
+
       base.Update(gameTime);
     }
 
@@ -145,11 +148,6 @@ namespace Celeste.Mod.Deathlink.IO
         Logger.Log(LogLevel.Error, "Deathlink/CNetComm", $"Exception was handled in Deathlink.IO.CNetComm.Send<{typeof(T).Name}>");
         Logger.LogDetailed(LogLevel.Error, "Deathlink/CNetComm", e.Message);
       }
-    }
-
-    internal void Tick(ulong counter)
-    {
-
     }
 
     #endregion

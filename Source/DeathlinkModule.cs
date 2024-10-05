@@ -24,6 +24,7 @@ public class DeathlinkModule : EverestModule
     private CNetComm Comm;
 
     private bool propagate = true;
+    private bool should_die = false;
     private static Dictionary<string, int> deathCounts = new Dictionary<string, int>();
 
     public DeathlinkModule()
@@ -60,6 +61,7 @@ public class DeathlinkModule : EverestModule
 
     public static PlayerDeadBody OnPlayerDie(Func<Player, Vector2, bool, bool, PlayerDeadBody> orig, Player self, Vector2 direction, bool ifInvincible, bool registerStats)
     {
+        Instance.should_die = false;
         if (Settings.Enabled && Settings.KillOthers)
         {
             if (Instance.propagate && CNetComm.Instance.IsConnected)
@@ -82,7 +84,21 @@ public class DeathlinkModule : EverestModule
             if (data.team == 0 || data.team == Settings.Team)
             {
                 propagate = false;
+                should_die = true;
+                Update();
+            }
+        }
+    }
 
+    public void Update()
+    {
+        // Logger.Log(LogLevel.Info, "Deathlink", $"Update {should_die}");
+        if (should_die)
+        {
+            Level level = Engine.Scene as Level;
+
+            if (level?.Transitioning == false)
+            {
                 Player player = Engine.Scene.Tracker.GetEntity<Player>();
                 if (player != null)
                 {
