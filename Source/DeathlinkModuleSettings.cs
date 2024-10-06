@@ -20,6 +20,10 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [SettingSubText("DEATHLINK_LOCATION_MODE_DESC")]
   public DeathlinkModule.LocationModes LocationMode { get; set; } = DeathlinkModule.LocationModes.Everywhere;
 
+  [SettingName("DEATHLINK_ANNOUNCE_MODE")]
+  [SettingSubText("DEATHLINK_ANNOUNCE_MODE_DESC")]
+  public DeathlinkModule.AnnounceModes AnnounceMode { get; set; } = DeathlinkModule.AnnounceModes.Team;
+
   [SettingName("DEATHLINK_TEAM")]
   [SettingSubText("DEATHLINK_TEAM_DESC")]
   [SettingRange(1, 100)]

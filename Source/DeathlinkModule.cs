@@ -86,9 +86,16 @@ public class DeathlinkModule : EverestModule
         return Settings.KillOthers && Instance.propagate;
     }
 
+    static bool ShouldAnnounceDeath(string player, int team)
+    {
+        return (team == 0) ||
+                (Settings.AnnounceMode == AnnounceModes.All) ||
+                (Settings.AnnounceMode == AnnounceModes.Team && team == Settings.Team) ||
+                (Settings.AnnounceMode == AnnounceModes.Self && player == CNetComm.Instance.CnetClient.PlayerInfo.FullName);
+    }
+
     public static PlayerDeadBody OnPlayerDie(Func<Player, Vector2, bool, bool, PlayerDeadBody> orig, Player self, Vector2 direction, bool ifInvincible, bool registerStats)
     {
-        Logger.Log(LogLevel.Info, "Deathlink", $"Player died {ShouldSendDeath()}");
         Instance.should_die = false;
         if (Settings.Enabled && ShouldSendDeath())
         {
@@ -116,7 +123,6 @@ public class DeathlinkModule : EverestModule
         Session session = self.SceneAs<Level>().Session;
         map = session.Area.SID;
         room = session.Level;
-        Logger.Log(LogLevel.Info, "Deathlink", $"Loaded level {map} {room}");
         orig(self);
     }
 
@@ -137,7 +143,6 @@ public class DeathlinkModule : EverestModule
 
     public void Update()
     {
-        // Logger.Log(LogLevel.Info, "Deathlink", $"Update {should_die}");
         if (should_die)
         {
             Level level = Engine.Scene as Level;
@@ -160,6 +165,7 @@ public class DeathlinkModule : EverestModule
     public void AnnounceDeath(string player, int team)
     {
         if (!CNetComm.Instance.IsConnected) return;
+        if (!ShouldAnnounceDeath(player, team)) return;
 
         if (team == 0)
         {
@@ -187,7 +193,7 @@ public class DeathlinkModule : EverestModule
         {
             output += $"{pair.Key}: {pair.Value}\n";
         }
-        // output += "test1\ntest2\ntest3\ntest4\ntest5\ntest6\ntest7\ntest8\ntest9";
+
         CNetComm.Instance.CnetContext.Status.Set(output, 5.0f, false, false);
     }
 
@@ -205,5 +211,13 @@ public class DeathlinkModule : EverestModule
         Everywhere,
         SameMap,
         SameRoom,
+    }
+
+    public enum AnnounceModes
+    {
+        None,
+        Self,
+        Team,
+        All,
     }
 }
