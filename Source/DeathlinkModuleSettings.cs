@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Xna.Framework.Input;
 
 namespace Celeste.Mod.Deathlink;
 
@@ -30,6 +31,18 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   public int Team { get; set; } = 1;
 
   public TextMenu.Button ShowDeaths { get; set; } = null;
+
+  #region Key Bindings
+
+  [SettingName("DEATHLINK_TOGGLE_BIND")]
+  [DefaultButtonBinding(0, 0)]
+  public ButtonBinding ToggleBind { get; set; }
+
+  [SettingName("DEATHLINK_LIST_BIND")]
+  [DefaultButtonBinding(0, 0)]
+  public ButtonBinding ListPlayersBind { get; set; }
+
+  #endregion
 
 
   public void CreateShowDeathsEntry(TextMenu menu, bool inGame)

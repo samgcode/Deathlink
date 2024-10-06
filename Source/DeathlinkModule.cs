@@ -160,6 +160,20 @@ public class DeathlinkModule : EverestModule
                 }
             }
         }
+
+        if (Settings.ToggleBind.Pressed)
+        {
+            Settings.Enabled = !Settings.Enabled;
+            if (CNetComm.Instance.IsConnected)
+            {
+                CNetComm.Instance.CnetContext.Status.Set($"Deathlink  {(Settings.Enabled ? "enabled" : "disabled")}", 2.0f, false, false);
+            }
+        }
+
+        if (Settings.ListPlayersBind.Pressed)
+        {
+            ListDeaths();
+        }
     }
 
     public void AnnounceDeath(string player, int team)
