@@ -4,6 +4,9 @@ DEATHLINK_KILL_OTHERS= Kill Others
 DEATHLINK_KILL_OTHERS_DESC= Wether or not other players on your team will die when you do
 DEATHLINK_RECEIVE_DEATHS= Receive Deaths
 DEATHLINK_RECEIVE_DEATHS_DESC= Wether or not you will die when other players on your team do
+DEATHLINK_LOCATION_MODE= Location Mode
+DEATHLINK_LOCATION_MODE_DESC= Only apply deathlink interactions with players in the 
+same room, map, or cnet channel (everywhere)
 DEATHLINK_TEAM= Team
 DEATHLINK_TEAM_DESC= Deaths will only affect players on the same team
 DEATHLINK_SHOWDEATHS= Show death counts

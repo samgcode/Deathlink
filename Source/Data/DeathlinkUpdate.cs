@@ -9,6 +9,9 @@ namespace Celeste.Mod.Deathlink.Data
     public DataPlayerInfo player;
     public string cnetChannel;
     public int team;
+    public DeathlinkModule.LocationModes locationMode;
+    public string map;
+    public string room;
 
     static DeathlinkUpdate()
     {
@@ -22,6 +25,9 @@ namespace Celeste.Mod.Deathlink.Data
     {
       this.team = team != -1 ? team : DeathlinkModule.Settings.Team;
       cnetChannel = CNetComm.Instance.CurrentChannel?.Name;
+      map = DeathlinkModule.map;
+      room = DeathlinkModule.room;
+      locationMode = DeathlinkModule.Settings.LocationMode;
     }
 
     public override DataFlags DataFlags => DataFlags.CoreType;
@@ -41,12 +47,18 @@ namespace Celeste.Mod.Deathlink.Data
     {
       team = reader.ReadInt32();
       cnetChannel = reader.ReadNetString();
+      map = reader.ReadNetString();
+      room = reader.ReadNetString();
+      locationMode = (DeathlinkModule.LocationModes)reader.ReadInt32();
     }
 
     protected override void Write(CelesteNetBinaryWriter writer)
     {
       writer.Write(team);
       writer.WriteNetString(cnetChannel);
+      writer.WriteNetString(map);
+      writer.WriteNetString(room);
+      writer.Write((int)locationMode);
     }
 
     public override string ToString()

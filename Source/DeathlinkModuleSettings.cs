@@ -16,6 +16,10 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [SettingSubText("DEATHLINK_RECEIVE_DEATHS_DESC")]
   public bool ReceiveDeaths { get; set; } = true;
 
+  [SettingName("DEATHLINK_LOCATION_MODE")]
+  [SettingSubText("DEATHLINK_LOCATION_MODE_DESC")]
+  public DeathlinkModule.LocationModes LocationMode { get; set; } = DeathlinkModule.LocationModes.Everywhere;
+
   [SettingName("DEATHLINK_TEAM")]
   [SettingSubText("DEATHLINK_TEAM_DESC")]
   [SettingRange(1, 100)]
@@ -40,5 +44,4 @@ public class DeathlinkModuleSettings : EverestModuleSettings
     menu.Add(item);
     return item;
   }
-
 }
