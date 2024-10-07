@@ -17,6 +17,11 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [SettingSubText("DEATHLINK_RECEIVE_DEATHS_DESC")]
   public bool ReceiveDeaths { get; set; } = true;
 
+  [SettingName("DEATHLINK_TEAM")]
+  [SettingSubText("DEATHLINK_TEAM_DESC")]
+  [SettingRange(1, 100)]
+  public int Team { get; set; } = 1;
+
   [SettingName("DEATHLINK_LOCATION_MODE")]
   [SettingSubText("DEATHLINK_LOCATION_MODE_DESC")]
   public DeathlinkModule.LocationModes LocationMode { get; set; } = DeathlinkModule.LocationModes.Everywhere;
@@ -25,10 +30,9 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [SettingSubText("DEATHLINK_ANNOUNCE_MODE_DESC")]
   public DeathlinkModule.AnnounceModes AnnounceMode { get; set; } = DeathlinkModule.AnnounceModes.Team;
 
-  [SettingName("DEATHLINK_TEAM")]
-  [SettingSubText("DEATHLINK_TEAM_DESC")]
-  [SettingRange(1, 100)]
-  public int Team { get; set; } = 1;
+  [SettingName("DEATHLINK_DISPLAY_FORMAT")]
+  [SettingSubText("DEATHLINK_DISPLAY_FORMAT_DESC")]
+  public DeathlinkModule.SubAnnounceModes DisplayFormat { get; set; } = DeathlinkModule.SubAnnounceModes.Both;
 
   public TextMenu.Button ShowDeaths { get; set; } = null;
 

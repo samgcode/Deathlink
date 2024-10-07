@@ -202,7 +202,21 @@ public class DeathlinkModule : EverestModule
             {
                 deathCounts.Add(player, 1);
             }
-            CNetComm.Instance.CnetContext.Status.Set($"team {team} was killed by {player}!", 2.0f, false, false);
+
+            string output = "";
+            if (Settings.DisplayFormat == SubAnnounceModes.PlayerOnly)
+            {
+                output = $"{player} died!";
+            }
+            else if (Settings.DisplayFormat == SubAnnounceModes.TeamOnly)
+            {
+                output = $"team {team} was killed!";
+            }
+            else if (Settings.DisplayFormat == SubAnnounceModes.Both)
+            {
+                output = $"team {team} was killed by {player}!";
+            }
+            CNetComm.Instance.CnetContext.Status.Set(output, 2.0f, false, false);
         }
     }
 
@@ -240,5 +254,13 @@ public class DeathlinkModule : EverestModule
         Self,
         Team,
         All,
+    }
+
+    public enum SubAnnounceModes
+    {
+        None,
+        PlayerOnly,
+        TeamOnly,
+        Both,
     }
 }
