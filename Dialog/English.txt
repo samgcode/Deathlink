@@ -12,5 +12,7 @@ DEATHLINK_ANNOUNCE_MODE_DESC= When to announce deaths in the bottom corner
 DEATHLINK_TEAM= Team
 DEATHLINK_TEAM_DESC= Deaths will only affect players on the same team
 DEATHLINK_SHOWDEATHS= Show death counts
+
 DEATHLINK_TOGGLE_BIND= Toggle Deathlink
 DEATHLINK_LIST_BIND= List death counts
+DEATHLINK_CNET_BIND= Toggle CelesteNet

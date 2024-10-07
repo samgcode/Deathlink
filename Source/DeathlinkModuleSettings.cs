@@ -42,6 +42,10 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [DefaultButtonBinding(0, 0)]
   public ButtonBinding ListPlayersBind { get; set; }
 
+  [SettingName("DEATHLINK_CNET_BIND")]
+  [DefaultButtonBinding(0, 0)]
+  public ButtonBinding ToggleCnetBind { get; set; }
+
   #endregion
 
 

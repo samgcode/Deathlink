@@ -6,6 +6,8 @@ using MonoMod.RuntimeDetour;
 using Celeste.Mod.Deathlink.IO;
 using Celeste.Mod.Deathlink.Data;
 using System.Collections.Generic;
+using Celeste.Mod.CelesteNet;
+using Celeste.Mod.CelesteNet.Client;
 
 namespace Celeste.Mod.Deathlink;
 
@@ -173,6 +175,11 @@ public class DeathlinkModule : EverestModule
         if (Settings.ListPlayersBind.Pressed)
         {
             ListDeaths();
+        }
+
+        if (Settings.ToggleCnetBind.Pressed)
+        {
+            CelesteNetClientModule.Settings.Connected = !CelesteNetClientModule.Settings.Connected;
         }
     }
 
