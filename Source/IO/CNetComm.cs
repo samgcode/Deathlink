@@ -122,7 +122,7 @@ namespace Celeste.Mod.Deathlink.IO
         act();
       }
 
-      DeathlinkModule.Instance.Update();
+      DeathlinkModule.Instance.Update(gameTime);
 
       base.Update(gameTime);
     }

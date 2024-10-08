@@ -8,6 +8,8 @@ using Celeste.Mod.Deathlink.Data;
 using System.Collections.Generic;
 using Celeste.Mod.CelesteNet;
 using Celeste.Mod.CelesteNet.Client;
+using Celeste.Mod.CelesteNet.Client.Components;
+using Celeste.Mod.Deathlink.Message;
 
 namespace Celeste.Mod.Deathlink;
 
@@ -32,6 +34,8 @@ public class DeathlinkModule : EverestModule
     public static string map;
     public static string room;
 
+    public StatusComponent Status;
+
     public DeathlinkModule()
     {
         Instance = this;
@@ -41,6 +45,7 @@ public class DeathlinkModule : EverestModule
     public override void Load()
     {
         Celeste.Instance.Components.Add(Comm = new CNetComm(Celeste.Instance));
+
 
         Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
         Logger.Log(LogLevel.Debug, "Deathlink", "Deathlink loaded!");
@@ -53,13 +58,20 @@ public class DeathlinkModule : EverestModule
 
         On.Celeste.LevelLoader.StartLevel += OnLoadLevel;
         On.Celeste.Player.OnTransition += OnPlayerTransition;
+    }
 
+    public override void Initialize()
+    {
+        base.Initialize();
+        Celeste.Instance.Components.Add(Status = new StatusComponent(Celeste.Instance));
     }
 
     public override void Unload()
     {
         Celeste.Instance.Components.Remove(Comm);
         Comm = null;
+        Celeste.Instance.Components.Remove(Status);
+        Status = null;
 
         CNetComm.OnReceiveDeathlinkUpdate -= OnReceiveDeathlinkUpdateHandler;
 
@@ -138,12 +150,11 @@ public class DeathlinkModule : EverestModule
             {
                 propagate = false;
                 should_die = true;
-                Update();
             }
         }
     }
 
-    public void Update()
+    public void Update(GameTime gameTime)
     {
         if (should_die)
         {
@@ -166,10 +177,7 @@ public class DeathlinkModule : EverestModule
         if (Settings.ToggleBind.Pressed)
         {
             Settings.Enabled = !Settings.Enabled;
-            if (CNetComm.Instance.IsConnected)
-            {
-                CNetComm.Instance.CnetContext.Status.Set($"Deathlink  {(Settings.Enabled ? "enabled" : "disabled")}", 2.0f, false, false);
-            }
+            Status.Push(new Message.Message(MessageType.Message, $"Deathlink  {(Settings.Enabled ? "enabled" : "disabled")}", 2.0f));
         }
 
         if (Settings.ListPlayersBind.Pressed)
@@ -183,14 +191,18 @@ public class DeathlinkModule : EverestModule
         }
     }
 
+    public T Get<T>() where T : CelesteNetGameComponent
+            => CNetComm.Instance.CnetContext.Components.TryGetValue(typeof(T), out CelesteNetGameComponent component) ? (T)component : null;
+
     public void AnnounceDeath(string player, int team)
     {
-        if (!CNetComm.Instance.IsConnected) return;
         if (!ShouldAnnounceDeath(player, team)) return;
 
         if (team == 0)
         {
-            CNetComm.Instance.CnetContext.Status.Set($"{player}: killed everyone", 2.0f, false, false);
+            Logger.Log(LogLevel.Info, "Deathlink", $"{player} killed everyone");
+            // Status.Set($"{player}: killed everyone", 2.0f);
+            Status.Push(new Message.Message(MessageType.Death, $"{player} killed everyone", 2.0f));
         }
         else
         {
@@ -216,20 +228,19 @@ public class DeathlinkModule : EverestModule
             {
                 output = $"team {team} was killed by {player}!";
             }
-            CNetComm.Instance.CnetContext.Status.Set(output, 2.0f, false, false);
+            Status.Push(new Message.Message(MessageType.Death, output, 2.0f));
         }
     }
 
     public static void ListDeaths()
     {
-        if (!CNetComm.Instance.IsConnected) return;
-        string output = "deaths:\n";
+        float time = 5.0f;
+        Instance.Status.Push(new Message.Message(MessageType.None, $"Deaths:", time));
         foreach (var pair in deathCounts)
         {
-            output += $"{pair.Key}: {pair.Value}\n";
+            time += 0.1f;
+            Instance.Status.Push(new Message.Message(MessageType.None, $"{pair.Key}: {pair.Value}", time));
         }
-
-        CNetComm.Instance.CnetContext.Status.Set(output, 5.0f, false, false);
     }
 
     public static void ResetDeathCounts()
