@@ -46,7 +46,6 @@ public class DeathlinkModule : EverestModule
     {
         Celeste.Instance.Components.Add(Comm = new CNetComm(Celeste.Instance));
 
-
         Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
         Logger.Log(LogLevel.Debug, "Deathlink", "Deathlink loaded!");
 
@@ -190,9 +189,6 @@ public class DeathlinkModule : EverestModule
             CelesteNetClientModule.Settings.Connected = !CelesteNetClientModule.Settings.Connected;
         }
     }
-
-    public T Get<T>() where T : CelesteNetGameComponent
-            => CNetComm.Instance.CnetContext.Components.TryGetValue(typeof(T), out CelesteNetGameComponent component) ? (T)component : null;
 
     public void AnnounceDeath(string player, int team)
     {

@@ -47,7 +47,7 @@ namespace Celeste.Mod.Deathlink.Message
 
       // foreach (KeyValuePair<string, MTexture> kvp in GFX.Gui.textures)
       // {
-      //   Logger.Log(LogLevel.Info, "Deathlink", $"Sprite: {kvp.Key}");
+      //   Logger.Log(LogLevel.Info, "Deathlink/StatusComponent", $"Sprite: {kvp.Key}");
       // }
     }
 
@@ -83,7 +83,7 @@ namespace Celeste.Mod.Deathlink.Message
         }
         catch (Exception e)
         {
-          Logger.Log(LogLevel.Debug, "Deathlink", $"couldn't remove message {e}, idk why this error happens because it works fine anyway?");
+          Logger.Log(LogLevel.Debug, "Deathlink/StatusComponent", $"couldn't remove message {e}, idk why this error happens because it works fine anyway?");
         }
       }
     }
@@ -140,24 +140,32 @@ namespace Celeste.Mod.Deathlink.Message
 
         if (message.type != MessageType.None)
         {
-          Icon icon = icons[message.type];
-          MTexture texture = icon.texture;
-
-          float iconScale = MathHelper.Lerp(0.2f, icon.scale, Ease.CubeOut(a));
-
-          if (!(texture?.Texture?.Texture?.IsDisposed ?? true))
+          try
           {
-            if (message.type == MessageType.Message)
-            {
-              for (int x = -2; x <= 2; x++)
-                for (int y = -2; y <= 2; y++)
-                  if (x != 0 || y != 0)
-                    texture.DrawCentered(pos + new Vector2(x, y), Color.Black * a * a * a * a, iconScale, 0.0f);
-            }
-            texture.DrawCentered(pos, Color.White * a, iconScale, 0.0f);
-          }
+            Icon icon = icons[message.type];
+            MTexture texture = icon.texture;
 
-          pos += new Vector2(48f, 0f);
+            float iconScale = MathHelper.Lerp(0.2f, icon.scale, Ease.CubeOut(a));
+
+            if (!(texture?.Texture?.Texture?.IsDisposed ?? true))
+            {
+              if (message.type == MessageType.Message)
+              {
+                for (int x = -2; x <= 2; x++)
+                  for (int y = -2; y <= 2; y++)
+                    if (x != 0 || y != 0)
+                      texture.DrawCentered(pos + new Vector2(x, y), Color.Black * a * a * a * a, iconScale, 0.0f);
+              }
+              texture.DrawCentered(pos, Color.White * a, iconScale, 0.0f);
+            }
+
+            pos += new Vector2(48f, 0f);
+          }
+          catch (Exception e)
+          {
+            LoadContent();
+            Logger.Log(LogLevel.Debug, "Deathlink/StatusComponent", $"Error rendering message icon: {e}");
+          }
         }
 
 
