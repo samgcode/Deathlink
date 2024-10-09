@@ -1,5 +1,6 @@
 DEATHLINK_ENABLE= Enabled
-DEATHLINK_ENABLE_DESC= The two settings below only apply when this is enabled
+DEATHLINK_ENABLE_DESC= Wether or not Deathlink is enabled
+can be toggled with a keybind
 DEATHLINK_KILL_OTHERS= Kill Others
 DEATHLINK_KILL_OTHERS_DESC= Wether or not other players on your team will die when you do
 DEATHLINK_RECEIVE_DEATHS= Receive Deaths
@@ -8,7 +9,7 @@ DEATHLINK_TEAM= Team
 DEATHLINK_TEAM_DESC= Deaths will only affect players on the same team
 
 DEATHLINK_LOCATION_MODE= Location Mode
-DEATHLINK_LOCATION_MODE_DESC= Only apply deathlink interactions with players in the 
+DEATHLINK_LOCATION_MODE_DESC= Only get killed by players in the 
 same room, map, or cnet channel (everywhere)
 DEATHLINK_ANNOUNCE_MODE= Announce Deaths For
 DEATHLINK_ANNOUNCE_MODE_DESC= When to announce deaths in the bottom corner

@@ -87,11 +87,7 @@ public class DeathlinkModule : EverestModule
                         (Settings.LocationMode == LocationModes.SameMap && otherMap == map) ||
                         (Settings.LocationMode == LocationModes.SameRoom && otherMap == map && otherRoom == room);
 
-        bool otherLocationFlag = otherLocationMode == LocationModes.Everywhere ||
-                            (otherLocationMode == LocationModes.SameMap && otherMap == map) ||
-                            (otherLocationMode == LocationModes.SameRoom && otherMap == map && otherRoom == room);
-
-        return Settings.ReceiveDeaths && (otherTeam == 0 || otherTeam == Settings.Team) && locationFlag && otherLocationFlag;
+        return Settings.ReceiveDeaths && (otherTeam == 0 || otherTeam == Settings.Team) && locationFlag;
     }
 
     static bool ShouldSendDeath()
