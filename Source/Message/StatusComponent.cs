@@ -1,12 +1,11 @@
-using Celeste.Mod.CelesteNet.DataTypes;
 using Microsoft.Xna.Framework;
 using Monocle;
 using Celeste.Mod.CelesteNet.Client;
-using Celeste.Mod.CelesteNet;
 using MDraw = Monocle.Draw;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System;
+using Celeste.Mod.Deathlink;
 
 namespace Celeste.Mod.Deathlink.Message
 {
@@ -97,7 +96,8 @@ namespace Celeste.Mod.Deathlink.Message
           DepthStencilState.None,
           RasterizerState.CullNone,
           null,
-          Matrix.Identity
+          // Matrix.Identity
+          Engine.ScreenMatrix
       );
 
       Render(gameTime);
@@ -135,7 +135,29 @@ namespace Celeste.Mod.Deathlink.Message
         Vector2 size = CelesteNetClientFont.Measure(text);
         float height = size.Y + 4.0f;
 
-        Vector2 anchor = new(96f, CelesteNetGameComponent.UI_HEIGHT - 96f - height * index);
+        float x_pos = 75f;
+        float y_pos = Engine.Height - 75f - height * index;
+
+        DeathlinkModuleSettings settings = DeathlinkModule.Settings;
+        if (settings.Status.VerticalPosition == VerticalPosition.Middle)
+        {
+          y_pos = Engine.Height / 2 - height * messages.Count / 2 + height * index;
+        }
+        else if (settings.Status.VerticalPosition == VerticalPosition.Top)
+        {
+          y_pos = 75f + height * index;
+        }
+
+        if (settings.Status.HorizontalPosition == HorizontalPosition.Center)
+        {
+          x_pos = Engine.Width / 2 - size.X / 2;
+        }
+        else if (settings.Status.HorizontalPosition == HorizontalPosition.Right)
+        {
+          x_pos = Engine.Width - 75f - size.X;
+        }
+
+        Vector2 anchor = new(x_pos, y_pos);
         Vector2 pos = anchor;
 
         if (message.type != MessageType.None)
@@ -211,5 +233,19 @@ namespace Celeste.Mod.Deathlink.Message
     Message,
     Death,
     Error,
+  }
+
+  public enum VerticalPosition
+  {
+    Top,
+    Middle,
+    Bottom
+  }
+
+  public enum HorizontalPosition
+  {
+    Left,
+    Center,
+    Right
   }
 }

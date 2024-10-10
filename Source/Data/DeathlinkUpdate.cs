@@ -27,7 +27,7 @@ namespace Celeste.Mod.Deathlink.Data
       cnetChannel = CNetComm.Instance.CurrentChannel?.Name;
       map = DeathlinkModule.map;
       room = DeathlinkModule.room;
-      locationMode = DeathlinkModule.Settings.LocationMode;
+      locationMode = DeathlinkModule.Settings.Location.LocationMode;
     }
 
     public override DataFlags DataFlags => DataFlags.CoreType;

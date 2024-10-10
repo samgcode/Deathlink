@@ -83,24 +83,24 @@ public class DeathlinkModule : EverestModule
 
     static bool ShouldRecieveDeath(int otherTeam, string otherMap, string otherRoom, LocationModes otherLocationMode)
     {
-        bool locationFlag = (Settings.LocationMode == LocationModes.Everywhere) ||
-                        (Settings.LocationMode == LocationModes.SameMap && otherMap == map) ||
-                        (Settings.LocationMode == LocationModes.SameRoom && otherMap == map && otherRoom == room);
+        bool locationFlag = (Settings.Location.LocationMode == LocationModes.Everywhere) ||
+                        (Settings.Location.LocationMode == LocationModes.SameMap && otherMap == map) ||
+                        (Settings.Location.LocationMode == LocationModes.SameRoom && otherMap == map && otherRoom == room);
 
-        return Settings.ReceiveDeaths && (otherTeam == 0 || otherTeam == Settings.Team) && locationFlag;
+        return Settings.Location.ReceiveDeaths && (otherTeam == 0 || otherTeam == Settings.Team) && locationFlag;
     }
 
     static bool ShouldSendDeath()
     {
-        return Settings.KillOthers && Instance.propagate;
+        return Settings.Location.KillOthers && Instance.propagate;
     }
 
     static bool ShouldAnnounceDeath(string player, int team)
     {
         return (team == 0) ||
-                (Settings.AnnounceMode == AnnounceModes.All) ||
-                (Settings.AnnounceMode == AnnounceModes.Team && team == Settings.Team) ||
-                (Settings.AnnounceMode == AnnounceModes.Self && player == CNetComm.Instance.CnetClient.PlayerInfo.FullName);
+                (Settings.Status.AnnounceMode == AnnounceModes.All) ||
+                (Settings.Status.AnnounceMode == AnnounceModes.Team && team == Settings.Team) ||
+                (Settings.Status.AnnounceMode == AnnounceModes.Self && player == CNetComm.Instance.CnetClient.PlayerInfo.FullName);
     }
 
     public static PlayerDeadBody OnPlayerDie(Func<Player, Vector2, bool, bool, PlayerDeadBody> orig, Player self, Vector2 direction, bool ifInvincible, bool registerStats)
@@ -208,15 +208,15 @@ public class DeathlinkModule : EverestModule
             }
 
             string output = "";
-            if (Settings.DisplayFormat == SubAnnounceModes.PlayerOnly)
+            if (Settings.Status.DisplayFormat == SubAnnounceModes.PlayerOnly)
             {
                 output = $"{player} died!";
             }
-            else if (Settings.DisplayFormat == SubAnnounceModes.TeamOnly)
+            else if (Settings.Status.DisplayFormat == SubAnnounceModes.TeamOnly)
             {
                 output = $"team {team} was killed!";
             }
-            else if (Settings.DisplayFormat == SubAnnounceModes.Both)
+            else if (Settings.Status.DisplayFormat == SubAnnounceModes.Both)
             {
                 output = $"team {team} was killed by {player}!";
             }
