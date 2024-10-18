@@ -6,9 +6,7 @@ using MonoMod.RuntimeDetour;
 using Celeste.Mod.Deathlink.IO;
 using Celeste.Mod.Deathlink.Data;
 using System.Collections.Generic;
-using Celeste.Mod.CelesteNet;
 using Celeste.Mod.CelesteNet.Client;
-using Celeste.Mod.CelesteNet.Client.Components;
 using Celeste.Mod.Deathlink.Message;
 
 namespace Celeste.Mod.Deathlink;
@@ -30,6 +28,7 @@ public class DeathlinkModule : EverestModule
     private bool propagate = true;
     private bool should_die = false;
     private static Dictionary<string, int> deathCounts = new Dictionary<string, int>();
+    private ulong counter = 0;
 
     public static string map;
     public static string room;
@@ -41,13 +40,12 @@ public class DeathlinkModule : EverestModule
         Instance = this;
     }
 
-
     public override void Load()
     {
         Celeste.Instance.Components.Add(Comm = new CNetComm(Celeste.Instance));
 
         Logger.SetLogLevel(nameof(DeathlinkModule), LogLevel.Info);
-        Logger.Log(LogLevel.Debug, "Deathlink", "Deathlink loaded!");
+        Logger.Log(LogLevel.Info, "Deathlink", "Deathlink loaded!");
 
         CNetComm.OnReceiveDeathlinkUpdate += OnReceiveDeathlinkUpdateHandler;
 
@@ -115,6 +113,7 @@ public class DeathlinkModule : EverestModule
             }
         }
         Instance.propagate = true;
+
         // Now actually do the thing
         return orig(self, direction, ifInvincible, registerStats);
     }
@@ -123,7 +122,6 @@ public class DeathlinkModule : EverestModule
     {
         map = self.Level.Session.Area.SID;
         room = self.Level.Session.Level;
-        Logger.Log(LogLevel.Info, "Deathlink", $"Loaded level {map} {room}");
         orig(self);
     }
 
@@ -139,7 +137,6 @@ public class DeathlinkModule : EverestModule
     {
         if (Settings.Enabled)
         {
-            Logger.Log(LogLevel.Debug, "Deathlink", $"Received deathlink update: {data}");
             AnnounceDeath(data.player.FullName, data.team);
             if (ShouldRecieveDeath(data.team, data.map, data.room, data.locationMode))
             {
@@ -151,6 +148,11 @@ public class DeathlinkModule : EverestModule
 
     public void Update(GameTime gameTime)
     {
+        UpdateInput();
+
+        counter++;
+        if (counter % 10 != 0) return;
+
         if (should_die)
         {
             Level level = Engine.Scene as Level;
@@ -168,7 +170,10 @@ public class DeathlinkModule : EverestModule
                 }
             }
         }
+    }
 
+    private void UpdateInput()
+    {
         if (Settings.ToggleBind.Pressed)
         {
             Settings.Enabled = !Settings.Enabled;
@@ -178,6 +183,11 @@ public class DeathlinkModule : EverestModule
         if (Settings.ListPlayersBind.Pressed)
         {
             ListDeaths();
+        }
+
+        if (Settings.ResetDeathsBind.Pressed)
+        {
+            ResetDeathCounts();
         }
 
         if (Settings.ToggleCnetBind.Pressed)
@@ -192,8 +202,6 @@ public class DeathlinkModule : EverestModule
 
         if (team == 0)
         {
-            Logger.Log(LogLevel.Info, "Deathlink", $"{player} killed everyone");
-            // Status.Set($"{player}: killed everyone", 2.0f);
             Status.Push(new Message.Message(MessageType.Death, $"{player} killed everyone", 2.0f));
         }
         else
@@ -237,10 +245,8 @@ public class DeathlinkModule : EverestModule
 
     public static void ResetDeathCounts()
     {
-        foreach (KeyValuePair<string, int> entry in deathCounts)
-        {
-            deathCounts[entry.Key] = 0;
-        }
+        deathCounts.Clear();
+        Instance.Status.Push(new Message.Message(MessageType.Message, $"Cleared death counts", 2.0f));
     }
 
 

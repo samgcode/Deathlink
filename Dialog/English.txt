@@ -24,7 +24,9 @@ DEATHLINK_DISPLAY_VERTICAL= Vertical Position
 DEATHLINK_DISPLAY_HORIZONTAL= Horizontal Position
 
 DEATHLINK_SHOWDEATHS= Show death counts
+DEATHLINK_CLEARDEATHS= Clear death counts
 
 DEATHLINK_TOGGLE_BIND= Toggle Deathlink
 DEATHLINK_LIST_BIND= List death counts
+DEATHLINK_RESET_BIND= Reset Death Counts
 DEATHLINK_CNET_BIND= Toggle CelesteNet

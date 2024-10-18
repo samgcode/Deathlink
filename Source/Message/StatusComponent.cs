@@ -109,19 +109,19 @@ namespace Celeste.Mod.Deathlink.Message
     {
       base.Draw(gameTime);
 
-      RenderContentWrap(gameTime, true);
+      if (messages.Count > 0)
+      {
+        RenderContentWrap(gameTime, true);
+      }
     }
 
     public void Render(GameTime gameTime)
     {
-      if (messages.Count > 0)
+      int i = messages.Count - 1;
+      foreach (Message message in messages)
       {
-        int i = messages.Count - 1;
-        foreach (Message message in messages)
-        {
-          RenderMessage(message, i);
-          i--;
-        }
+        RenderMessage(message, i);
+        i--;
       }
     }
 

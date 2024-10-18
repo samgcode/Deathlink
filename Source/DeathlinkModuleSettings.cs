@@ -55,6 +55,7 @@ public class DeathlinkModuleSettings : EverestModuleSettings
 
 
   public TextMenu.Button ShowDeaths { get; set; } = null;
+  public TextMenu.Button ClearDeaths { get; set; } = null;
 
   #region Key Bindings
 
@@ -65,6 +66,10 @@ public class DeathlinkModuleSettings : EverestModuleSettings
   [SettingName("DEATHLINK_LIST_BIND")]
   [DefaultButtonBinding(0, 0)]
   public ButtonBinding ListPlayersBind { get; set; }
+
+  [SettingName("DEATHLINK_RESET_BIND")]
+  [DefaultButtonBinding(0, 0)]
+  public ButtonBinding ResetDeathsBind { get; set; }
 
   [SettingName("DEATHLINK_CNET_BIND")]
   [DefaultButtonBinding(0, 0)]
@@ -78,6 +83,13 @@ public class DeathlinkModuleSettings : EverestModuleSettings
     TextMenu.Button item = CreateMenuButton(menu, "ShowDeaths", null, () =>
     {
       DeathlinkModule.ListDeaths();
+    });
+  }
+  public void CreateClearDeathsEntry(TextMenu menu, bool inGame)
+  {
+    TextMenu.Button item = CreateMenuButton(menu, "ClearDeaths", null, () =>
+    {
+      DeathlinkModule.ResetDeathCounts();
     });
   }
 

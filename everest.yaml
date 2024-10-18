@@ -1,5 +1,5 @@
 - Name: Deathlink
-  Version: 1.9.0
+  Version: 1.9.1
   DLL: bin/Deathlink.dll
   Dependencies:
     - Name: EverestCore
