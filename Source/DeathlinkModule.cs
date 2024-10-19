@@ -106,10 +106,13 @@ public class DeathlinkModule : EverestModule
         Instance.should_die = false;
         if (Settings.Enabled && ShouldSendDeath())
         {
-            if (CNetComm.Instance.IsConnected)
+            if (!ifInvincible && self.StateMachine.State != Player.StReflectionFall && self.StateMachine.State != Player.StDummy)
             {
-                Instance.AnnounceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
-                CNetComm.Instance.Send(new DeathlinkUpdate(), false);
+                if (CNetComm.Instance.IsConnected)
+                {
+                    Instance.AnnounceDeath(CNetComm.Instance.CnetClient.PlayerInfo.FullName, Settings.Team);
+                    CNetComm.Instance.Send(new DeathlinkUpdate(), false);
+                }
             }
         }
         Instance.propagate = true;
@@ -162,11 +165,14 @@ public class DeathlinkModule : EverestModule
                 Player player = Engine.Scene.Tracker.GetEntity<Player>();
                 if (player != null)
                 {
-                    player.Die(Vector2.Zero);
-                }
-                else
-                {
-                    Logger.Log(LogLevel.Debug, "Deathlink", "Player not found");
+                    if (player.StateMachine.State != Player.StDummy)
+                    {
+                        player.Die(Vector2.Zero);
+                    }
+                    else
+                    {
+                        Logger.Log(LogLevel.Debug, "Deathlink", "Player not found");
+                    }
                 }
             }
         }
