@@ -106,7 +106,7 @@ public class DeathlinkModule : EverestModule
         Instance.should_die = false;
         if (Settings.Enabled && ShouldSendDeath())
         {
-            if (!ifInvincible && self.StateMachine.State != Player.StReflectionFall && self.StateMachine.State != Player.StDummy)
+            if (registerStats && self.StateMachine.State != Player.StReflectionFall && self.StateMachine.State != Player.StDummy)
             {
                 if (CNetComm.Instance.IsConnected)
                 {
