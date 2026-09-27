@@ -29,6 +29,12 @@ namespace Celeste.Mod.Deathlink.IO
     public delegate void OnReceiveDeathlinkUpdateHandler(DeathlinkUpdate data);
     public static event OnReceiveDeathlinkUpdateHandler OnReceiveDeathlinkUpdate;
 
+    public delegate void OnReceiveRoomProgressUpdateHandler(RoomProgressUpdate data);
+    public static event OnReceiveRoomProgressUpdateHandler OnReceiveRoomProgressUpdate;
+
+    public delegate void OnReceiveRoomSyncUpdateHandler(RoomSyncUpdate data);
+    public static event OnReceiveRoomSyncUpdateHandler OnReceiveRoomSyncUpdate;
+
     #endregion
 
     #region Local State Information
@@ -171,6 +177,22 @@ namespace Celeste.Mod.Deathlink.IO
       if (!isSameChannel(data.cnetChannel)) return;
       updateQueue.Enqueue(() => OnReceiveDeathlinkUpdate?.Invoke(data));
       Logger.Log(LogLevel.Debug, "Deathlink/CNetComm", $"Received DeathlinkUpdate: {data}");
+    }
+
+    public void Handle(CelesteNetConnection con, RoomProgressUpdate data)
+    {
+      if (data.player == null) data.player = CnetClient.PlayerInfo;  // It's null when handling our own messages
+      if (!isSameChannel(data.cnetChannel)) return;
+      updateQueue.Enqueue(() => OnReceiveRoomProgressUpdate?.Invoke(data));
+      Logger.Log(LogLevel.Debug, "Deathlink/CNetComm", $"Received RoomProgressUpdate: {data}");
+    }
+
+    public void Handle(CelesteNetConnection con, RoomSyncUpdate data)
+    {
+      if (data.player == null) data.player = CnetClient.PlayerInfo;
+      if (!isSameChannel(data.cnetChannel)) return;
+      updateQueue.Enqueue(() => OnReceiveRoomSyncUpdate?.Invoke(data));
+      Logger.Log(LogLevel.Debug, "Deathlink/CNetComm", $"Received RoomSyncUpdate: {data}");
     }
 
     #endregion

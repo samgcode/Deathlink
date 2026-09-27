@@ -7,12 +7,21 @@ DEATHLINK_TEAM_DESC= Deaths will only affect players on the same team
 DEATHLINK_LOCATION_MENU= Location Settings
 DEATHLINK_LOCATION_MENU_DESC= Settings for when and where Deathlink is active
 DEATHLINK_LOCATION_MODE= Location Mode
-DEATHLINK_LOCATION_MODE_DESC= Only get killed by players in the 
-same room, map, or cnet channel (everywhere)
+DEATHLINK_LOCATION_MODE_DESC= Choose which teammates can send Deathlink deaths to you
+Checkpoint sync requires Same Map
+Selecting Everywhere or Same Room disables checkpoint sync
+DEATHLINK_LOCATION_MODE_Everywhere= Everywhere
+DEATHLINK_LOCATION_MODE_SameMap= Same Map
+DEATHLINK_LOCATION_MODE_SameRoom= Same Room
 DEATHLINK_KILL_OTHERS= Kill Others
 DEATHLINK_KILL_OTHERS_DESC= Wether or not other players on your team will die when you do
 DEATHLINK_RECEIVE_DEATHS= Receive Deaths
 DEATHLINK_RECEIVE_DEATHS_DESC= Wether or not you will die when other players on your team do
+DEATHLINK_SYNC_ROOM_PROGRESS= Sync checkpoint progress
+DEATHLINK_SYNC_ROOM_PROGRESS_DESC= Share exact respawn points with teammates in the same chapter and side
+Enabling this automatically selects Same Map
+Selecting Everywhere or Same Room disables checkpoint sync
+DEATHLINK_SYNC_ROOM_PROGRESS_NOTE= Sync selects Same Map; Everywhere and Same Room turn sync off
 
 DEATHLINK_STATUS= Announcement Settings
 DEATHLINK_STATUS_DESC= Options for the announcement UI
